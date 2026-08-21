@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12140f">
+<title>7th Purley Tuck Shop</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login" class="screen">
+  <h1>Tuck shop</h1>
+  <p class="muted">Leaders only. Scouts don't sign in.</p>
+  <input id="loginUser" placeholder="Username" autocapitalize="none" autocomplete="username">
+  <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password">
+  <button id="loginBtn" class="primary">Sign in</button>
+  <p id="loginErr" class="err"></p>
+</div>
+
+<div id="app" hidden>
+
+  <div id="banner" class="err" hidden></div>
+
+  <!-- SELL ------------------------------------------------------------- -->
+  <section id="tab-sell" class="tab">
+    <div id="sellPick">
+      <h2>Who's buying?</h2>
+      <div id="sellPeople" class="list"></div>
+      <button id="undoBtn" class="wide">Undo last order</button>
+    </div>
+
+    <div id="sellBasket" hidden>
+      <div class="bar">
+        <button id="backBtn" class="ghost">Back</button>
+        <div class="bar-name"><strong id="sellName"></strong><span id="sellLeft" class="money"></span></div>
+      </div>
+      <div id="sellItems" class="grid"></div>
+      <div id="basketLines" class="list"></div>
+      <div class="foot">
+        <div class="total">Order total <span id="basketTotal" class="money">£0.00</span></div>
+        <button id="confirmBtn" class="primary wide">Confirm order</button>
+        <button id="clearBtn" class="ghost wide">Clear</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PEOPLE ----------------------------------------------------------- -->
+  <section id="tab-people" class="tab" hidden>
+    <h2>People</h2>
+    <input id="pName" placeholder="Name">
+    <input id="pAmount" inputmode="decimal" placeholder="Amount, e.g. 10.00">
+    <button id="pAdd" class="primary wide">Add person</button>
+    <p id="pMode" class="mode"></p>
+    <div id="peopleList" class="list"></div>
+  </section>
+
+  <!-- STOCK ------------------------------------------------------------ -->
+  <section id="tab-stock" class="tab" hidden>
+    <h2>Stock</h2>
+    <input id="sName" placeholder="Item name">
+    <input id="sPrice" inputmode="decimal" placeholder="Selling price each, e.g. 1.00">
+    <input id="sQty" inputmode="numeric" placeholder="How many units">
+    <input id="sCost" inputmode="decimal" placeholder="Total cost of this batch (optional)">
+    <button id="sAdd" class="primary wide">Add stock</button>
+    <p class="mode">Adding to an item that already exists keeps its current price.</p>
+    <div id="stockList" class="list"></div>
+  </section>
+
+  <!-- OWED ------------------------------------------------------------- -->
+  <section id="tab-owed" class="tab" hidden>
+    <h2>To hand back</h2>
+    <div class="figure"><span id="owedTotal" class="money big">£0.00</span><span class="muted">must still be in the tin</span></div>
+    <div id="owedList" class="list flat"></div>
+  </section>
+
+  <!-- PROFIT ----------------------------------------------------------- -->
+  <section id="tab-profit" class="tab" hidden>
+    <h2>Profit</h2>
+    <div class="figure"><span id="fProfit" class="money big">£0.00</span><span class="muted">profit so far</span></div>
+    <div class="figures">
+      <div><span class="muted">Revenue</span><span id="fRevenue" class="money"></span></div>
+      <div><span class="muted">Cost</span><span id="fCost" class="money"></span></div>
+      <div><span class="muted">Shelf value</span><span id="fShelf" class="money"></span></div>
+    </div>
+    <p class="mode">Cost counts every unit bought, sold or not. Profit starts low and climbs as the shelf empties.</p>
+    <div id="profitList" class="list flat"></div>
+  </section>
+
+  <!-- LOG -------------------------------------------------------------- -->
+  <section id="tab-log" class="tab" hidden>
+    <h2>Log</h2>
+    <pre id="logBody"></pre>
+    <input id="logPass" type="password" placeholder="Your password">
+    <button id="logClear" class="ghost wide" disabled>Archive and clear log</button>
+  </section>
+
+  <nav id="tabs">
+    <button data-tab="sell" class="on">Sell</button>
+    <button data-tab="people">People</button>
+    <button data-tab="stock">Stock</button>
+    <button data-tab="owed">Owed</button>
+    <button data-tab="profit">Profit</button>
+    <button data-tab="log">Log</button>
+  </nav>
+</div>
+
+<!-- EDIT PANEL --------------------------------------------------------- -->
+<div id="editPanel" class="screen" hidden>
+  <h2 id="editTitle"></h2>
+  <div id="editFields"></div>
+  <button id="editSave" class="primary wide">Save changes</button>
+  <button id="editDelete" class="danger wide">Delete</button>
+  <button id="editCancel" class="ghost wide">Cancel</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

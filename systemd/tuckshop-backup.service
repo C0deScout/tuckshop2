@@ -1,0 +1,9 @@
+[Unit]
+Description=Back up the Tuck Shop SQLite database
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/tuckshop
+ExecStart=/usr/bin/docker compose --profile tools run --rm backup

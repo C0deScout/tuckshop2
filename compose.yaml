@@ -1,0 +1,75 @@
+name: tuckshop
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  app:
+    build:
+      context: .
+    image: tuckshop:${IMAGE_TAG:-local}
+    restart: unless-stopped
+    environment:
+      TUCK_PASSWORD: ${TUCK_PASSWORD:?Set TUCK_PASSWORD in .env before first start}
+      TUCK_SECURE_COOKIES: "true"
+    volumes:
+      - tuckshop_data:/data
+    read_only: true
+    tmpfs:
+      # sqlite-jdbc extracts a native .so here; it must be executable.
+      - /tmp:exec,mode=1777,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 512m
+    pids_limit: 128
+    stop_grace_period: 30s
+    logging: *default-logging
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    pids_limit: 128
+    logging: *default-logging
+
+  backup:
+    image: tuckshop:${IMAGE_TAG:-local}
+    profiles: [tools]
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        mkdir -p /backups &&
+        sqlite3 /data/tuck.db ".timeout 5000" ".backup '/backups/tuck-$$(date -u +%Y%m%dT%H%M%SZ).db'"
+    volumes:
+      - tuckshop_data:/data
+      - ./backups:/backups
+    mem_limit: 256m
+    pids_limit: 64
+    logging: *default-logging
+
+volumes:
+  tuckshop_data:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,58 @@
+# Hostinger Docker Manager deployment.
+# Deploy this file only after the corrected project has replaced the old code on:
+# https://github.com/C0deScout/tuckshop
+#
+# Docker Manager environment variables required:
+#   DOMAIN=tuck.example.com
+#   TUCK_PASSWORD=<new long first-boot password>
+# Optional:
+#   IMAGE_TAG=latest
+
+services:
+  app:
+    build:
+      # A remote context ensures Docker Manager receives the Dockerfile, Java
+      # source, and frontend even when this Compose file is loaded by raw URL.
+      context: "https://github.com/C0deScout/tuckshop.git#main"
+    image: tuckshop-hostinger:${IMAGE_TAG:-latest}
+    pull_policy: build
+    restart: unless-stopped
+    environment:
+      TUCK_PASSWORD: ${TUCK_PASSWORD:?Set TUCK_PASSWORD in Docker Manager}
+      TUCK_SECURE_COOKIES: "true"
+    volumes:
+      - tuckshop_data:/data
+    read_only: true
+    tmpfs:
+      # sqlite-jdbc extracts a native Linux library here and must execute it.
+      - /tmp:exec,mode=1777,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 512m
+    pids_limit: 128
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    labels:
+      - "org.opencontainers.image.source=https://github.com/C0deScout/tuckshop"
+      - "org.opencontainers.image.documentation=https://github.com/C0deScout/tuckshop/blob/main/README-DOCKER.md"
+      - "com.hostinger.documentation=https://github.com/C0deScout/tuckshop/blob/main/README-DOCKER.md"
+      - "traefik.enable=true"
+      - "traefik.http.routers.tuckshop.rule=Host(`${DOMAIN:?Set DOMAIN in Docker Manager}`)"
+      - "traefik.http.routers.tuckshop.entrypoints=websecure"
+      - "traefik.http.routers.tuckshop.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.tuckshop.middlewares=tuckshop-security"
+      - "traefik.http.services.tuckshop.loadbalancer.server.port=5000"
+      - "traefik.http.middlewares.tuckshop-security.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.tuckshop-security.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.tuckshop-security.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.tuckshop-security.headers.frameDeny=true"
+      - "traefik.http.middlewares.tuckshop-security.headers.referrerPolicy=same-origin"
+
+volumes:
+  tuckshop_data:
