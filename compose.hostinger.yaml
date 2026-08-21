@@ -1,6 +1,6 @@
 # Hostinger Docker Manager deployment.
 # Deploy this file only after the corrected project has replaced the old code on:
-# https://github.com/C0deScout/tuckshop
+# https://github.com/C0deScout/tuckshop2
 #
 # Docker Manager environment variables required:
 #   DOMAIN=tuck.example.com
@@ -13,7 +13,7 @@ services:
     build:
       # A remote context ensures Docker Manager receives the Dockerfile, Java
       # source, and frontend even when this Compose file is loaded by raw URL.
-      context: "https://github.com/C0deScout/tuckshop.git#main"
+      context: "https://github.com/C0deScout/tuckshop2.git#main"
     image: tuckshop-hostinger:${IMAGE_TAG:-latest}
     pull_policy: build
     restart: unless-stopped
@@ -39,9 +39,9 @@ services:
         max-size: "10m"
         max-file: "5"
     labels:
-      - "org.opencontainers.image.source=https://github.com/C0deScout/tuckshop"
-      - "org.opencontainers.image.documentation=https://github.com/C0deScout/tuckshop/blob/main/README-DOCKER.md"
-      - "com.hostinger.documentation=https://github.com/C0deScout/tuckshop/blob/main/README-DOCKER.md"
+      - "org.opencontainers.image.source=https://github.com/C0deScout/tuckshop2"
+      - "org.opencontainers.image.documentation=https://github.com/C0deScout/tuckshop2/blob/main/README-DOCKER.md"
+      - "com.hostinger.documentation=https://github.com/C0deScout/tuckshop2/blob/main/README-DOCKER.md"
       - "traefik.enable=true"
       - "traefik.http.routers.tuckshop.rule=Host(`${DOMAIN:?Set DOMAIN in Docker Manager}`)"
       - "traefik.http.routers.tuckshop.entrypoints=websecure"
